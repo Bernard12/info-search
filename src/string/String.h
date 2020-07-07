@@ -6,18 +6,18 @@
 #define INFO_SEARCH_STRING_H
 
 #include <stdio.h>
-#include "mem.h"
 #include <malloc.h>
+#include <string.h>
 
 typedef struct {
-    wchar_t* symbols;
+    wchar_t *symbols;
     int size;
 } String;
 
-String* createString(const wchar_t*, int);
+String *createString(const wchar_t *, int);
 
-void deleteString(String**);
+void deleteString(String *);
 
-wchar_t getChar(String*, int);
+wchar_t getChar(String *, int);
 
 #endif //INFO_SEARCH_STRING_H
