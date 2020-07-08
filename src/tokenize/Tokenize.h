@@ -9,14 +9,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <malloc.h>
+#include <wctype.h>
 
 #define KB 1024
 #define MB 1024 * 1024
-
-#define READ_TITLE 0
-#define READ_TEXT 1
-#define WRITE_OUTPUT 2
-
 
 void tokenize(const char* inPath, const char* outPath);
 
