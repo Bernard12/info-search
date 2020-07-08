@@ -1,14 +1,10 @@
-#include <stdio.h>
 #include <locale.h>
-#include <wchar.h>
-#include "./string/String.h"
+#include "./tokenize/Tokenize.h"
 
 int main() {
     setlocale(LC_ALL, "");
-    const wchar_t st[25] = L"Привет мир";
-    String* s = createString(st, 9);
-    wchar_t t = getChar(s, 0);
-    wprintf(L"%lc", t);
-    deleteString(s);
+    const char inPath[] = "C:\\Users\\ivan\\IdeaProjects\\kalinin\\parsed-6.txt";
+    const char outPath[] = "C:\\Users\\ivan\\IdeaProjects\\kalinin\\parsed-tokenized.txt";
+    tokenize(inPath, outPath);
     return 0;
 }
