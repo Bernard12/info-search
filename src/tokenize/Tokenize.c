@@ -4,26 +4,34 @@
 
 #include "Tokenize.h"
 
-void writeDataToFile(const wchar_t* data, int size, FILE* fptr) {
-    wchar_t cur = 0, prev = 0;
+void writeDataToFile(const wchar_t *data, int size, FILE *fptr) {
+    wchar_t cur = 0;
+    int isSpaceCur = 0;
+    int isSpacePrev = 0;
+
+    wchar_t* temp = malloc(sizeof(temp) * size);
+    int idx = 0;
+
     for (int i = 0; i < size; i++) {
         cur = data[i];
+        isSpaceCur = iswspace(cur);
 
-        if (!(iswspace(cur) || iswalpha(cur) || iswalnum(cur))) {
+        if (!(isSpaceCur || iswalpha(cur) || iswalnum(cur))) {
             continue;
         }
 
-        if (!(iswspace(cur) && iswspace(prev) && cur != L'\n')) {
-            fwprintf(fptr, L"%lc", cur);
+        if (!(isSpaceCur && isSpacePrev && cur != L'\n')) {
+            temp[idx++] = cur;
         }
 
-
-
-        prev = cur;
+        isSpacePrev = isSpaceCur;
     }
+    temp[idx] = '\0';
+    fputws(temp, fptr);
+    free(temp);
 }
 
-void cleanString(wchar_t* data, int size) {
+void cleanString(wchar_t *data, int size) {
     wchar_t c;
     for (int i = 0; i < size; i++) {
         c = data[i];
@@ -59,7 +67,7 @@ void tokenize(const char* inPath, const char* outPath) {
         cleanString(text, currentTextSize);
         writeDataToFile(title, currentTitleSize, outFile);
         writeDataToFile(text, currentTextSize, outFile);
-        if (++documentIdx % 100 == 0) {
+        if (++documentIdx % 5000 == 0) {
             printf("[Parsed] - %d\n", documentIdx);
         }
         wmemset(title, 0, currentTitleSize);
