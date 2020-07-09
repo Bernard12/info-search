@@ -8,5 +8,8 @@ add_executable(
         info_search
         src/main.cpp
         src/tokenize/Tokenize.cpp
-        src/common/common.h)
+        src/common/hash/hash.cpp
+        src/common/common.h
+        src/common/hashmap/HashMap.cpp
+)
 

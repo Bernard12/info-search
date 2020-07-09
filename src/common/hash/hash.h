@@ -6,8 +6,7 @@
 #define INFO_SEARCH_HASH_H
 
 #include <cstdint>
-#include <>
-#include <string.h>
+#include <cstring>
 
 uint64_t hash(const wchar_t* str);
 

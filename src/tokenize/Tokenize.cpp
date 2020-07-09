@@ -51,8 +51,8 @@ void tokenize(const char* inPath, const char* outPath) {
     size_t titleSize = sizeof(wchar_t) * titleSymbols;
     size_t textSize = sizeof(wchar_t) * textSymbols;
 
-    auto* title = (wchar_t*) malloc(titleSize);
-    auto* text = (wchar_t*) malloc(textSize);
+    auto* title = new wchar_t[titleSize];
+    auto* text = new wchar_t[textSize];
 
     memset(title, 0, titleSize);
     memset(text, 0, textSize);
@@ -73,6 +73,6 @@ void tokenize(const char* inPath, const char* outPath) {
 
     in.close();
     out.close();
-    free(title);
-    free(text);
+    delete[] title;
+    delete[] text;
 }
