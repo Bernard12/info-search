@@ -1,9 +1,9 @@
-#include <locale.h>
 #include "./tokenize/Tokenize.h"
+#include "./common/common.h"
 
 int main() {
-    setlocale(LC_ALL, "en_US.UTF-8");
-    const char inPath[] = "/home/ivan/CLionProjects/info-search/parsed.txt";
+    setupLocal();
+    const char inPath[] = "/home/ivan/CLionProjects/info-search/parsed1.txt";
     const char outPath[] = "/home/ivan/CLionProjects/info-search/parsed-tok.txt";
     tokenize(inPath, outPath);
     return 0;

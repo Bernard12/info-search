@@ -4,12 +4,13 @@
 
 #include "Tokenize.h"
 
-void writeDataToFile(const wchar_t *data, int size, FILE *fptr) {
+wchar_t temp[1024 * 1024] = {0};
+
+void writeDataToFile(const wchar_t *data, int size, std::wofstream& out) {
     wchar_t cur = 0;
     int isSpaceCur = 0;
     int isSpacePrev = 0;
 
-    wchar_t* temp = malloc(sizeof(temp) * size);
     int idx = 0;
 
     for (int i = 0; i < size; i++) {
@@ -26,9 +27,8 @@ void writeDataToFile(const wchar_t *data, int size, FILE *fptr) {
 
         isSpacePrev = isSpaceCur;
     }
-    temp[idx] = '\0';
-    fputws(temp, fptr);
-    free(temp);
+    temp[idx] = 0;
+    out << temp << L'\n';
 }
 
 void cleanString(wchar_t *data, int size) {
@@ -42,8 +42,8 @@ void cleanString(wchar_t *data, int size) {
 }
 
 void tokenize(const char* inPath, const char* outPath) {
-    FILE* inFile = fopen(inPath, "r");
-    FILE* outFile = fopen(outPath, "w");
+    std::wifstream in(inPath);
+    std::wofstream out(outPath);
 
     int titleSymbols = 16 * KB;
     int textSymbols = 32 * MB;
@@ -51,29 +51,28 @@ void tokenize(const char* inPath, const char* outPath) {
     size_t titleSize = sizeof(wchar_t) * titleSymbols;
     size_t textSize = sizeof(wchar_t) * textSymbols;
 
-    wchar_t* title = malloc(titleSize);
-    wchar_t* text = malloc(textSize);
+    auto* title = (wchar_t*) malloc(titleSize);
+    auto* text = (wchar_t*) malloc(textSize);
 
     memset(title, 0, titleSize);
     memset(text, 0, textSize);
 
     int documentIdx = 0;
 
-
-    while (fgetws(title, titleSymbols, inFile) != NULL && fgetws(text, textSymbols, inFile)) {
+    while (in.getline(title, titleSymbols, L'\n') && in.getline(text, textSymbols, L'\n')) {
         size_t currentTitleSize = wcslen(title);
         size_t currentTextSize = wcslen(text);
         cleanString(title, currentTitleSize);
         cleanString(text, currentTextSize);
-        writeDataToFile(title, currentTitleSize, outFile);
-        writeDataToFile(text, currentTextSize, outFile);
+        writeDataToFile(title, currentTitleSize, out);
+        writeDataToFile(text, currentTextSize, out);
         if (++documentIdx % 5000 == 0) {
-            printf("[Parsed] - %d\n", documentIdx);
+            printf("[Parsed] - %d\n", documentIdx++);
         }
-        wmemset(title, 0, currentTitleSize);
-        wmemset(text, 0, currentTitleSize);
     }
 
-    fclose(inFile);
-    fclose(outFile);
+    in.close();
+    out.close();
+    free(title);
+    free(text);
 }

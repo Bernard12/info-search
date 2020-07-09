@@ -7,9 +7,13 @@
 
 #include <wchar.h>
 #include <string.h>
-#include <stdio.h>
-#include <malloc.h>
-#include <wctype.h>
+//#include <stdio.h>
+//#include <malloc.h>
+//#include <wctype.h>
+
+#include <iostream>
+#include <string>
+#include <fstream>
 
 #define KB 1024
 #define MB 1024 * 1024
