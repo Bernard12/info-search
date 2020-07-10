@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <cwchar>
 
 uint64_t hash(const wchar_t* str);
 

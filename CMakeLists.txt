@@ -10,6 +10,6 @@ add_executable(
         src/tokenize/Tokenize.cpp
         src/common/hash/hash.cpp
         src/common/common.h
-        src/common/hashmap/HashMap.cpp
+        src/boolean/index.cpp
 )
 
