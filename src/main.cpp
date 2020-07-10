@@ -1,13 +1,12 @@
-//#include "./tokenize/Tokenize.h"
+#include "./tokenize/Tokenize.h"
 #include "./common/common.h"
-#include "./common/hashmap/HashMap.h"
+#include "./boolean//index.h"
 
 int main() {
-//    setupLocal();
-//    const char inPath[] = "/home/ivan/CLionProjects/info-search/parsed1.txt";
-//    const char outPath[] = "/home/ivan/CLionProjects/info-search/parsed-tok.txt";
-//    tokenize(inPath, outPath);
-    HashMap* test = createHashMap(5);
-//    free(test);
+    setupLocal();
+    const char inPath[] = "/home/ivan/CLionProjects/info-search/parsed.txt";
+    const char outPath[] = "/home/ivan/CLionProjects/info-search/parsed-tok1.txt";
+    const char binOut[] = "/home/ivan/CLionProjects/info-search/parsed-tok-bin.bin";
+    createIndex(outPath, binOut);
     return 0;
 }

@@ -4,17 +4,22 @@
 
 #include "index.h"
 
-struct ListNode {
+struct DocListNode {
     int docId;
-    ListNode * next;
+    DocListNode *next;
+};
+
+struct TokenListNode {
+    wchar_t *token;
+    TokenListNode *next;
+    DocListNode *docListRoot;
 };
 
 struct InvertedIndex {
-    int tokenHash;
-    ListNode* docIdsList;
+    TokenListNode *tokenRoot;
 };
 
-int getRealEnd(const wchar_t * str) {
+int getRealEnd(const wchar_t *str) {
     int size = wcslen(str);
     int res = size - 1;
     while (str[res] == L' ') {
@@ -23,24 +28,77 @@ int getRealEnd(const wchar_t * str) {
     return res + 1;
 }
 
-void getSubstr(const wchar_t* str, int pos, int n) {
-    auto* substr = (wchar_t *) malloc(sizeof(wchar_t) * n + 1);
+wchar_t *getSubstr(const wchar_t *str, int pos, int n) {
+    auto *substr = (wchar_t *) malloc(sizeof(wchar_t) * n + 1);
     wcsncpy(substr, str + pos, n);
     substr[n] = 0;
-    std::wcout << substr << ' ';
-    free(substr);
+    return substr;
 }
 
-void createIndex(const char* in, const char* out) {
+void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docId) {
+    auto *token = getSubstr(str, pos, n);
+    std::wcout << token << L' ';
+
+    auto *docNode = new DocListNode;
+    docNode->docId = docId;
+    docNode->next = nullptr;
+
+    if (index->tokenRoot == nullptr) {
+        auto *root = new TokenListNode;
+        root->token = token;
+        root->docListRoot = docNode;
+        root->next = nullptr;
+
+        index->tokenRoot = root;
+        return;
+    }
+
+    TokenListNode *root = index->tokenRoot;
+    TokenListNode *prev = nullptr;
+    while (root != nullptr) {
+        if (wcscmp(root->token, token) == 0) {
+            break;
+        }
+        prev = root;
+        root = root->next;
+    }
+    // token not found
+    if (root == nullptr) {
+        auto *nextTokenNode = new TokenListNode;
+        nextTokenNode->token = token;
+        nextTokenNode->docListRoot = docNode;
+        nextTokenNode->next = nullptr;
+
+        prev->next = nextTokenNode;
+    } else {
+        DocListNode* docRoot = root->docListRoot;
+        bool isDocPresent = docRoot->docId == docId;
+        while (docRoot->next) {
+            isDocPresent = isDocPresent || docRoot->docId == docId;
+            docRoot = docRoot->next;
+            isDocPresent = isDocPresent || docRoot->docId == docId;
+        }
+
+        if (!isDocPresent) {
+            docRoot->next = docNode;
+        } else {
+            delete docNode;
+        }
+    }
+}
+
+void createIndex(const char *in, const char *out) {
     std::wifstream input(in);
 
     int titleSymbols = 64 * 1024;
     int textSymbols = 32 * 1024 * 1024;
+    int docId = 0;
 
-    auto* title = (wchar_t *) malloc(sizeof(wchar_t) *titleSymbols);
-    auto* text = (wchar_t *) malloc(sizeof(wchar_t ) * textSymbols);
+    auto *title = (wchar_t *) malloc(sizeof(wchar_t) * titleSymbols);
+    auto *text = (wchar_t *) malloc(sizeof(wchar_t) * textSymbols);
 
-//    auto* index = (InvertedIndex*) malloc(sizeof(InvertedIndex) * 1);
+    int indexSize = 0;
+    auto *index = (InvertedIndex *) malloc(sizeof(InvertedIndex) * 1);
 
     while (input.getline(title, titleSymbols) && input.getline(text, textSymbols)) {
         // parse title
@@ -48,35 +106,33 @@ void createIndex(const char* in, const char* out) {
         int realStringEnd = -1;
         realStringEnd = getRealEnd(title);
         for (int i = 0; i < realStringEnd; i++) {
-            if (i == realStringEnd - 1) {
-                int size = realStringEnd - pos;
-                getSubstr(title, pos, size);
-            } else if (title[i] == L' ') {
-                int size = i - pos;
-                getSubstr(title, pos, size);
-                pos = i + 1;
+            bool isTokenEnd = i == realStringEnd - 1 || title[i] == L' ';
+            if (!isTokenEnd) {
                 continue;
             }
+            int size = title[i] == L' ' ? i - pos : realStringEnd - pos;
+            addToken(index, title, pos, size, docId);
+            pos = i + 1;
         }
         std::wcout << '\n';
 
         realStringEnd = getRealEnd(text);
         pos = 0;
         for (int i = 0; i < realStringEnd; i++) {
-            if (i == realStringEnd - 1) {
-                int size = realStringEnd - pos;
-                getSubstr(text, pos, size);
-            } else if (text[i] == L' ') {
-                int size = i - pos;
-                getSubstr(text, pos, size);
-                pos = i + 1;
+            bool isTokenEnd = i == realStringEnd - 1 || text[i] == L' ';
+            if (!isTokenEnd) {
                 continue;
             }
+            int size = text[i] == L' ' ? i - pos : realStringEnd - pos;
+            addToken(index, text, pos, size, docId);
+            pos = i + 1;
         }
         std::wcout << L'\n';
+        docId++;
     }
 
     free(title);
     free(text);
+    free(index);
     input.close();
 }
