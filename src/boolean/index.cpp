@@ -29,7 +29,7 @@ int getRealEnd(const wchar_t *str) {
 }
 
 wchar_t *getSubstr(const wchar_t *str, int pos, int n) {
-    auto *substr = (wchar_t *) malloc(sizeof(wchar_t) * n + 1);
+    auto *substr = new wchar_t[n + 1];
     wcsncpy(substr, str + pos, n);
     substr[n] = 0;
     return substr;
@@ -84,7 +84,31 @@ void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docI
         } else {
             delete docNode;
         }
+        delete[] token;
     }
+}
+
+void freeIndex(InvertedIndex* index) {
+    TokenListNode* tmp;
+    TokenListNode* cur = index->tokenRoot;
+
+    DocListNode* docTemp;
+    DocListNode* docCur;
+    while (cur) {
+        tmp = cur;
+        cur = cur->next;
+
+        docCur = tmp->docListRoot;
+        while (docCur) {
+            docTemp = docCur;
+            docCur = docCur->next;
+            delete docTemp;
+        }
+
+        delete[] tmp->token;
+        delete tmp;
+    }
+    delete index;
 }
 
 void createIndex(const char *in, const char *out) {
@@ -94,11 +118,10 @@ void createIndex(const char *in, const char *out) {
     int textSymbols = 32 * 1024 * 1024;
     int docId = 0;
 
-    auto *title = (wchar_t *) malloc(sizeof(wchar_t) * titleSymbols);
-    auto *text = (wchar_t *) malloc(sizeof(wchar_t) * textSymbols);
+    auto *title = new wchar_t[titleSymbols];
+    auto *text = new wchar_t[textSymbols];
 
-    int indexSize = 0;
-    auto *index = (InvertedIndex *) malloc(sizeof(InvertedIndex) * 1);
+    auto *index = new InvertedIndex;
 
     while (input.getline(title, titleSymbols) && input.getline(text, textSymbols)) {
         // parse title
@@ -131,8 +154,8 @@ void createIndex(const char *in, const char *out) {
         docId++;
     }
 
-    free(title);
-    free(text);
-    free(index);
+    delete[] title;
+    delete[] text;
+    freeIndex(index);
     input.close();
 }
