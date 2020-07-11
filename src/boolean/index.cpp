@@ -41,7 +41,7 @@ struct HashedInvertedIndex {
     int size;
 
     ~HashedInvertedIndex() {
-        delete [] indexes;
+        delete[] indexes;
     }
 };
 
@@ -97,6 +97,9 @@ wchar_t *getSubstr(const wchar_t *str, int pos, int n) {
     auto *substr = new wchar_t[n + 1];
     wcsncpy(substr, str + pos, n);
     substr[n] = 0;
+    for (int i = 0; i < n; i++) {
+        substr[i] = towlower(substr[i]);
+    }
     return substr;
 }
 
@@ -104,7 +107,7 @@ void addToken(HashedInvertedIndex *hashedIndex, const wchar_t *str, int pos, int
     auto *token = getSubstr(str, pos, n);
 //    std::wcout << token << L' ';
     uint64_t th = hash(token) % hashedIndex->size;
-    InvertedIndex* index = &(hashedIndex->indexes[th]);
+    InvertedIndex *index = &(hashedIndex->indexes[th]);
 
     if (index->tokenRoot == nullptr) {
         auto *root = new TokenListNode;
@@ -152,8 +155,30 @@ void addToken(HashedInvertedIndex *hashedIndex, const wchar_t *str, int pos, int
     }
 }
 
-void freeHashedIndex(HashedInvertedIndex* index) {
+void freeHashedIndex(HashedInvertedIndex *index) {
     delete index;
+}
+
+void writeIndex(HashedInvertedIndex *index, std::ofstream &out) {
+    int size = index->size;
+    for (int i = 0; i < size; i++) {
+        InvertedIndex *cur = index->indexes + i;
+        if (cur->tokenRoot == nullptr) {
+            continue;
+        }
+        TokenListNode *tokenHead = cur->tokenRoot;
+        while (tokenHead != nullptr) {
+            out.write((char *) &tokenHead->hash, sizeof(uint64_t));
+
+            IntVector *docs = tokenHead->docArray;
+            out.write((char *) &docs->size, sizeof(int));
+            for (int j = 0; j < docs->size; j++) {
+                out.write((char*) &docs->items[j], sizeof(int));
+            }
+
+            tokenHead = tokenHead->next;
+        }
+    }
 }
 
 void createIndex(const char *in, const char *out) {
@@ -167,7 +192,7 @@ void createIndex(const char *in, const char *out) {
     auto *text = new wchar_t[textSymbols];
 
     auto *hashedIndex = new HashedInvertedIndex;
-    hashedIndex->size = 50000;
+    hashedIndex->size = 25000;
     hashedIndex->indexes = new InvertedIndex[hashedIndex->size];
 
     while (input.getline(title, titleSymbols) && input.getline(text, textSymbols)) {
@@ -202,6 +227,9 @@ void createIndex(const char *in, const char *out) {
             std::wcout.flush();
         }
     }
+
+    std::ofstream output(out, std::ios::binary | std::ios::out);
+    writeIndex(hashedIndex, output);
 
     delete[] title;
     delete[] text;
