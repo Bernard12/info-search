@@ -9,31 +9,50 @@ struct IntVector {
     int *items;
     int pos;
     int size;
-};
 
-//struct DocListNode {
-//    int docId;
-//    DocListNode *next;
-//};
+    ~IntVector() {
+        delete[] items;
+    }
+};
 
 struct TokenListNode {
     wchar_t *token;
     uint64_t hash;
     TokenListNode *next;
     IntVector *docArray;
+
+    ~TokenListNode() {
+        delete[] token;
+        delete docArray;
+        delete next;
+    }
 };
 
 struct InvertedIndex {
     TokenListNode *tokenRoot;
+
+    ~InvertedIndex() {
+        delete tokenRoot;
+    }
 };
 
-IntVector* createVector(int size) {
-    auto* vec = new IntVector;
+struct HashedInvertedIndex {
+    InvertedIndex *indexes;
+    int size;
+
+    ~HashedInvertedIndex() {
+        delete [] indexes;
+    }
+};
+
+IntVector *createVector(int size) {
+    auto *vec = new IntVector;
     vec->items = new int[size];
     vec->pos = 0;
     vec->size = size;
     return vec;
 }
+
 void push(IntVector *vector, int value) {
     if (vector->pos == vector->size - 1) {
         int newSize = vector->size * 2;
@@ -47,6 +66,7 @@ void push(IntVector *vector, int value) {
     }
     vector->items[vector->pos++] = value;
 }
+
 bool has(IntVector *vector, int value) {
     int l = 0;
     int r = vector->pos - 1;
@@ -80,10 +100,11 @@ wchar_t *getSubstr(const wchar_t *str, int pos, int n) {
     return substr;
 }
 
-void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docId) {
+void addToken(HashedInvertedIndex *hashedIndex, const wchar_t *str, int pos, int n, int docId) {
     auto *token = getSubstr(str, pos, n);
 //    std::wcout << token << L' ';
-
+    uint64_t th = hash(token) % hashedIndex->size;
+    InvertedIndex* index = &(hashedIndex->indexes[th]);
 
     if (index->tokenRoot == nullptr) {
         auto *root = new TokenListNode;
@@ -120,7 +141,7 @@ void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docI
 
         prev->next = nextTokenNode;
     } else {
-        IntVector* docIds = root->docArray;
+        IntVector *docIds = root->docArray;
         bool isDocPresent = has(docIds, docId);
 
         if (!isDocPresent) {
@@ -131,21 +152,7 @@ void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docI
     }
 }
 
-void freeIndex(InvertedIndex *index) {
-    TokenListNode *tmp;
-    TokenListNode *cur = index->tokenRoot;
-
-    while (cur) {
-        tmp = cur;
-        cur = cur->next;
-
-        IntVector* vec = tmp->docArray;
-        delete[] vec->items;
-        delete vec;
-
-        delete[] tmp->token;
-        delete tmp;
-    }
+void freeHashedIndex(HashedInvertedIndex* index) {
     delete index;
 }
 
@@ -159,7 +166,9 @@ void createIndex(const char *in, const char *out) {
     auto *title = new wchar_t[titleSymbols];
     auto *text = new wchar_t[textSymbols];
 
-    auto *index = new InvertedIndex;
+    auto *hashedIndex = new HashedInvertedIndex;
+    hashedIndex->size = 50000;
+    hashedIndex->indexes = new InvertedIndex[hashedIndex->size];
 
     while (input.getline(title, titleSymbols) && input.getline(text, textSymbols)) {
         // parse title
@@ -172,10 +181,9 @@ void createIndex(const char *in, const char *out) {
                 continue;
             }
             int size = title[i] == L' ' ? i - pos : realStringEnd - pos;
-            addToken(index, title, pos, size, docId);
+            addToken(hashedIndex, title, pos, size, docId);
             pos = i + 1;
         }
-//        std::wcout << '\n';
 
         realStringEnd = getRealEnd(text);
         pos = 0;
@@ -185,12 +193,11 @@ void createIndex(const char *in, const char *out) {
                 continue;
             }
             int size = text[i] == L' ' ? i - pos : realStringEnd - pos;
-            addToken(index, text, pos, size, docId);
+            addToken(hashedIndex, text, pos, size, docId);
             pos = i + 1;
         }
-//        std::wcout << L'\n';
         docId++;
-        if (docId % 100 == 0) {
+        if (docId % 1000 == 0) {
             std::wcout << docId << L'\n';
             std::wcout.flush();
         }
@@ -198,6 +205,6 @@ void createIndex(const char *in, const char *out) {
 
     delete[] title;
     delete[] text;
-    freeIndex(index);
+    delete hashedIndex;
     input.close();
 }
