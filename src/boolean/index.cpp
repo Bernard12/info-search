@@ -11,6 +11,7 @@ struct DocListNode {
 
 struct TokenListNode {
     wchar_t *token;
+    uint64_t hash;
     TokenListNode *next;
     DocListNode *docListRoot;
 };
@@ -37,7 +38,7 @@ wchar_t *getSubstr(const wchar_t *str, int pos, int n) {
 
 void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docId) {
     auto *token = getSubstr(str, pos, n);
-    std::wcout << token << L' ';
+//    std::wcout << token << L' ';
 
     auto *docNode = new DocListNode;
     docNode->docId = docId;
@@ -46,6 +47,7 @@ void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docI
     if (index->tokenRoot == nullptr) {
         auto *root = new TokenListNode;
         root->token = token;
+        root->hash = hash(token);
         root->docListRoot = docNode;
         root->next = nullptr;
 
@@ -55,8 +57,10 @@ void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docI
 
     TokenListNode *root = index->tokenRoot;
     TokenListNode *prev = nullptr;
+    uint64_t tokenHash = hash(token);
     while (root != nullptr) {
-        if (wcscmp(root->token, token) == 0) {
+        uint64_t rootTokenHash = root->hash;
+        if (tokenHash == rootTokenHash && wcscmp(root->token, token) == 0) {
             break;
         }
         prev = root;
@@ -66,6 +70,7 @@ void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docI
     if (root == nullptr) {
         auto *nextTokenNode = new TokenListNode;
         nextTokenNode->token = token;
+        nextTokenNode->hash = hash(token);
         nextTokenNode->docListRoot = docNode;
         nextTokenNode->next = nullptr;
 
@@ -137,7 +142,7 @@ void createIndex(const char *in, const char *out) {
             addToken(index, title, pos, size, docId);
             pos = i + 1;
         }
-        std::wcout << '\n';
+//        std::wcout << '\n';
 
         realStringEnd = getRealEnd(text);
         pos = 0;
@@ -150,8 +155,12 @@ void createIndex(const char *in, const char *out) {
             addToken(index, text, pos, size, docId);
             pos = i + 1;
         }
-        std::wcout << L'\n';
+//        std::wcout << L'\n';
         docId++;
+        if (docId % 100 == 0) {
+            std::wcout << docId << L'\n';
+            std::wcout.flush();
+        }
     }
 
     delete[] title;
