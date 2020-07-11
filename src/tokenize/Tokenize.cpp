@@ -62,6 +62,7 @@ void tokenize(const char* inPath, const char* outPath) {
     while (in.getline(title, titleSymbols, L'\n') && in.getline(text, textSymbols, L'\n')) {
         size_t currentTitleSize = wcslen(title);
         size_t currentTextSize = wcslen(text);
+        out << title << L'\n';
         cleanString(title, currentTitleSize);
         cleanString(text, currentTextSize);
         writeDataToFile(title, currentTitleSize, out);

@@ -173,7 +173,7 @@ void writeIndex(HashedInvertedIndex *index, std::ofstream &out) {
             IntVector *docs = tokenHead->docArray;
             out.write((char *) &docs->size, sizeof(int));
             for (int j = 0; j < docs->size; j++) {
-                out.write((char*) &docs->items[j], sizeof(int));
+                out.write((char *) &docs->items[j], sizeof(int));
             }
 
             tokenHead = tokenHead->next;
@@ -181,13 +181,14 @@ void writeIndex(HashedInvertedIndex *index, std::ofstream &out) {
     }
 }
 
-void createIndex(const char *in, const char *out) {
+void createInvertedIndex(const char *in, const char *out) {
     std::wifstream input(in);
 
     int titleSymbols = 64 * 1024;
     int textSymbols = 32 * 1024 * 1024;
     int docId = 0;
 
+    auto *notModifiedTitle = new wchar_t[titleSymbols];
     auto *title = new wchar_t[titleSymbols];
     auto *text = new wchar_t[textSymbols];
 
@@ -195,7 +196,11 @@ void createIndex(const char *in, const char *out) {
     hashedIndex->size = 25000;
     hashedIndex->indexes = new InvertedIndex[hashedIndex->size];
 
-    while (input.getline(title, titleSymbols) && input.getline(text, textSymbols)) {
+    while (
+            input.getline(notModifiedTitle, titleSymbols) &&
+            input.getline(title, titleSymbols) &&
+            input.getline(text, textSymbols)
+            ) {
         // parse title
         int pos = 0;
         int realStringEnd = -1;
@@ -231,8 +236,37 @@ void createIndex(const char *in, const char *out) {
     std::ofstream output(out, std::ios::binary | std::ios::out);
     writeIndex(hashedIndex, output);
 
+    delete[] notModifiedTitle;
     delete[] title;
     delete[] text;
     delete hashedIndex;
+    input.close();
+}
+
+void createForwardIndex(const char *in, const char *out) {
+    std::wifstream input(in);
+    std::ofstream output(out, std::ios::binary | std::ios::out);
+
+    int titleSymbols = 64 * 1024;
+    int textSymbols = 32 * 1024 * 1024;
+    int docId = 0;
+
+    auto *notModifiedTitle = new wchar_t[titleSymbols];
+    auto *title = new wchar_t[titleSymbols];
+    auto *text = new wchar_t[textSymbols];
+
+    while (
+            input.getline(notModifiedTitle, titleSymbols) &&
+            input.getline(title, titleSymbols) &&
+            input.getline(text, textSymbols)
+            ) {
+        output.write((char*) &docId, sizeof(int));
+        output.write((char*) notModifiedTitle, sizeof(wchar_t ) * wcslen(notModifiedTitle));
+        docId++;
+    }
+
+    delete[] notModifiedTitle;
+    delete[] title;
+    delete[] text;
     input.close();
 }

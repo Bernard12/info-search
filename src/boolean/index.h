@@ -10,6 +10,7 @@
 #include <fstream>
 #include "../common/hash/hash.h"
 
-void createIndex(const char* in, const char* out);
+void createInvertedIndex(const char* in, const char* out);
+void createForwardIndex(const char* in, const char* out);
 
 #endif //INFO_SEARCH_INDEX_H
