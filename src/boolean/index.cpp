@@ -4,21 +4,65 @@
 
 #include "index.h"
 
-struct DocListNode {
-    int docId;
-    DocListNode *next;
+// for doc list
+struct IntVector {
+    int *items;
+    int pos;
+    int size;
 };
+
+//struct DocListNode {
+//    int docId;
+//    DocListNode *next;
+//};
 
 struct TokenListNode {
     wchar_t *token;
     uint64_t hash;
     TokenListNode *next;
-    DocListNode *docListRoot;
+    IntVector *docArray;
 };
 
 struct InvertedIndex {
     TokenListNode *tokenRoot;
 };
+
+IntVector* createVector(int size) {
+    auto* vec = new IntVector;
+    vec->items = new int[size];
+    vec->pos = 0;
+    vec->size = size;
+    return vec;
+}
+void push(IntVector *vector, int value) {
+    if (vector->pos == vector->size - 1) {
+        int newSize = vector->size * 2;
+        int *vals = new int[newSize];
+        for (int i = 0; i < vector->size; i++) {
+            vals[i] = vector->items[i];
+        }
+        delete[] vector->items;
+        vector->size = newSize;
+        vector->items = vals;
+    }
+    vector->items[vector->pos++] = value;
+}
+bool has(IntVector *vector, int value) {
+    int l = 0;
+    int r = vector->pos - 1;
+    while (l <= r) {
+        int mid = (r + l) / 2;
+        if (vector->items[mid] == value) {
+            return true;
+        } else if (vector->items[mid] > value) {
+            r = mid - 1;
+        } else {
+            l = mid + 1;
+        }
+    }
+
+    return false;
+}
 
 int getRealEnd(const wchar_t *str) {
     int size = wcslen(str);
@@ -40,15 +84,13 @@ void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docI
     auto *token = getSubstr(str, pos, n);
 //    std::wcout << token << L' ';
 
-    auto *docNode = new DocListNode;
-    docNode->docId = docId;
-    docNode->next = nullptr;
 
     if (index->tokenRoot == nullptr) {
         auto *root = new TokenListNode;
         root->token = token;
         root->hash = hash(token);
-        root->docListRoot = docNode;
+        root->docArray = createVector(5);
+        push(root->docArray, docId);
         root->next = nullptr;
 
         index->tokenRoot = root;
@@ -58,6 +100,7 @@ void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docI
     TokenListNode *root = index->tokenRoot;
     TokenListNode *prev = nullptr;
     uint64_t tokenHash = hash(token);
+    // need faster algo to search token
     while (root != nullptr) {
         uint64_t rootTokenHash = root->hash;
         if (tokenHash == rootTokenHash && wcscmp(root->token, token) == 0) {
@@ -71,44 +114,34 @@ void addToken(InvertedIndex *index, const wchar_t *str, int pos, int n, int docI
         auto *nextTokenNode = new TokenListNode;
         nextTokenNode->token = token;
         nextTokenNode->hash = hash(token);
-        nextTokenNode->docListRoot = docNode;
+        nextTokenNode->docArray = createVector(5);
+        push(nextTokenNode->docArray, docId);
         nextTokenNode->next = nullptr;
 
         prev->next = nextTokenNode;
     } else {
-        DocListNode* docRoot = root->docListRoot;
-        bool isDocPresent = docRoot->docId == docId;
-        while (docRoot->next) {
-            isDocPresent = isDocPresent || docRoot->docId == docId;
-            docRoot = docRoot->next;
-            isDocPresent = isDocPresent || docRoot->docId == docId;
-        }
+        IntVector* docIds = root->docArray;
+        bool isDocPresent = has(docIds, docId);
 
         if (!isDocPresent) {
-            docRoot->next = docNode;
-        } else {
-            delete docNode;
+            push(docIds, docId);
         }
+
         delete[] token;
     }
 }
 
-void freeIndex(InvertedIndex* index) {
-    TokenListNode* tmp;
-    TokenListNode* cur = index->tokenRoot;
+void freeIndex(InvertedIndex *index) {
+    TokenListNode *tmp;
+    TokenListNode *cur = index->tokenRoot;
 
-    DocListNode* docTemp;
-    DocListNode* docCur;
     while (cur) {
         tmp = cur;
         cur = cur->next;
 
-        docCur = tmp->docListRoot;
-        while (docCur) {
-            docTemp = docCur;
-            docCur = docCur->next;
-            delete docTemp;
-        }
+        IntVector* vec = tmp->docArray;
+        delete[] vec->items;
+        delete vec;
 
         delete[] tmp->token;
         delete tmp;
