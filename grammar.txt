@@ -1,0 +1,24 @@
+<expr> ::= <token> |
+		   <o_bracket> <token> <c_bracket> |
+           <o_bracket> <expr> <c_bracket> |
+		   <expr> <and> <expr> |
+		   <expr> <or> <expr> |
+           <not> <o_bracket> <expr> <c_bracket> |
+           <not> <token>
+
+<delim> ::= " "
+
+<token> ::= <low_alpha> |
+			<high_alpha> |
+            <low_alpha> <token> |
+            <high_alpha> <token>
+
+<low_alpha> ::= [a-z]
+<high_alpha> ::= [A-Z]
+
+<and> ::= <delim>+ "&&" <delim>+ | <delim>+
+<or>  ::= <delim>+ "||" <delim>+
+<not> ::= "!"
+
+<o_bracket> ::= "("
+<c_bracket> ::= ")"
