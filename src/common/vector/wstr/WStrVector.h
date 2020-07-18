@@ -23,5 +23,6 @@ struct WStrVector {
 WStrVector *createWStrVector(int size);
 
 void pushWStr(WStrVector *vector, const wchar_t *value);
+wchar_t* popWStr(WStrVector* vector);
 
 #endif //INFO_SEARCH_WSTRVECTOR_H

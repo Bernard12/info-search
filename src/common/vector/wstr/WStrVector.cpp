@@ -32,3 +32,10 @@ void pushWStr(WStrVector *vector, const wchar_t *value) {
     vector->items[vector->pos] = new wchar_t[valueSize + 1];
     wcscpy(vector->items[vector->pos++], value);
 }
+
+wchar_t* popWStr(WStrVector* vector) {
+    if (vector->pos != 0) {
+        return vector->items[--vector->pos];
+    }
+    return nullptr;
+}
