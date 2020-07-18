@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include "../common/hash/hash.h"
+#include "../common/vector/IntVector.h"
 
 void createInvertedIndex(const char* in, const char* out);
 void createForwardIndex(const char* in, const char* out);

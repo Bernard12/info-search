@@ -13,5 +13,7 @@ add_executable(
         src/common/hash/hash.cpp
         src/common/common.h
         src/boolean/index.cpp
+        src/common/vector/IntVector.cpp
+        src/expr_parser/parser.cpp
 )
 
