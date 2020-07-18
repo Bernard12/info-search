@@ -64,7 +64,7 @@ void addToken(HashedInvertedIndex *hashedIndex, const wchar_t *str, int pos, int
         auto *root = new TokenListNode;
         root->token = token;
         root->hash = hash(token);
-        root->docArray = createVector(5);
+        root->docArray = createIntVector(5);
         push(root->docArray, docId);
         root->next = nullptr;
 
@@ -89,7 +89,7 @@ void addToken(HashedInvertedIndex *hashedIndex, const wchar_t *str, int pos, int
         auto *nextTokenNode = new TokenListNode;
         nextTokenNode->token = token;
         nextTokenNode->hash = hash(token);
-        nextTokenNode->docArray = createVector(5);
+        nextTokenNode->docArray = createIntVector(5);
         push(nextTokenNode->docArray, docId);
         nextTokenNode->next = nullptr;
 

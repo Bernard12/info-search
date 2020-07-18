@@ -6,7 +6,8 @@
 
 uint64_t hash(const wchar_t* str) {
     uint64_t res = 0;
-    for (int i = 0; i < wcslen(str); i++) {
+    int size = wcslen(str);
+    for (int i = 0; i < size; i++) {
         res = res * 31 + str[i];
     }
     return res;
