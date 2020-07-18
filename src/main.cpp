@@ -15,16 +15,18 @@ int main() {
 //    createInvertedIndex(outPath, inversedIndex);
 //    createForwardIndex(outPath, forwardIndex);
 //    const wchar_t* msg = L"!((N))";
-    int size = 10;
     #define SIZE 10
     const wchar_t* msg[SIZE] = {
             L"bla4",
             L"K && XX",
             L"(R) !((qr))    &&  (((x)) || g)",
-            L"!((k) !iu)"
+            L"!((k) !iu)",
+            L"((n)   || !qb)",
+            L"!(   R    (vee))"
     };
 
-    for (int i = 0; i < 4; i++) {
+
+    for (int i = 0; i < 6; i++) {
         parseExpression(msg[i]);
         std::wcout << "\n------------" << '\n';
     }
