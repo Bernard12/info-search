@@ -15,7 +15,7 @@ struct IntVector {
     }
 };
 
-IntVector *createVector(int size);
+IntVector *createIntVector(int size);
 void push(IntVector *vector, int value);
 bool has(IntVector *vector, int value);
 #endif //INFO_SEARCH_WCHARVECTOR_H

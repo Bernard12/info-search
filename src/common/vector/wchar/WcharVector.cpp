@@ -4,7 +4,7 @@
 
 #include "WcharVector.h"
 
-WcharStrVector *createVector(int size) {
+WcharStrVector *createStrVector(int size) {
     auto *vec = new WcharStrVector;
     vec->items = new wchar_t*[size];
     vec->pos = 0;

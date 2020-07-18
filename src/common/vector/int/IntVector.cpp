@@ -4,7 +4,7 @@
 
 #include "IntVector.h"
 
-IntVector *createVector(int size) {
+IntVector *createIntVector(int size) {
     auto *vec = new IntVector;
     vec->items = new int[size];
     vec->pos = 0;

@@ -19,6 +19,6 @@ struct WcharStrVector {
     }
 };
 
-WcharStrVector *createVector(int size);
+WcharStrVector *createStrVector(int size);
 void push(WcharStrVector *vector, const wchar_t* value);
 #endif //INFO_SEARCH_INTVECTOR_H
