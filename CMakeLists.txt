@@ -5,7 +5,7 @@ project(info_search)
 #set(CMAKE_C_FLAGS "${CMAKE_CFLAGS} -O0 -march=native")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -O0 -pg")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -O3 -march=native")
-set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -Wall -pg")
+set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -Wall -fsanitize=address")
 
 add_executable(
         info_search
