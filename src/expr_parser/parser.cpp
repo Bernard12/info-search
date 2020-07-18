@@ -75,29 +75,27 @@ wchar_t *trim(const wchar_t *str, wchar_t c) {
     return res;
 }
 
-WStrVector* removeInvalidExpToken(WStrVector* vec) {
+WStrVector *removeInvalidExpToken(WStrVector *vec) {
     auto res = createWStrVector(10);
     for (int i = 0; i < vec->pos; i++) {
         bool isOp = wcscmp(vec->items[i], L"&&") == 0 || wcscmp(vec->items[i], L"||") == 0;
-        if (isOp && i == 0) {
-            continue;
-        }
-        bool isPrevToken = iswalpha(vec->items[i][0]);
-        if (isOp && !isPrevToken) {
+        bool prevIsGood = i > 0 && (vec->items[i - 1][0] == L')' || iswalpha(vec->items[i - 1][0]));
+        bool nextIsGood = i < vec->pos - 1 && (vec->items[i + 1][0] == L'(' || iswalpha(vec->items[i + 1][0]) || vec->items[i+1][0] == L'!');
+        if (isOp && (!prevIsGood || !nextIsGood)) {
             continue;
         }
         int size = wcslen(vec->items[i]);
-        auto tmp = new wchar_t[size+1];
+        auto tmp = new wchar_t[size + 1];
         wcscpy(tmp, vec->items[i]);
         pushWStr(res, tmp);
-        delete [] tmp;
+        delete[] tmp;
     }
     return res;
 }
 
-wchar_t* parseExpressionToken(const wchar_t* str) {
+wchar_t *parseExpressionToken(const wchar_t *str) {
     if (isEmptyString(str)) {
-        auto* t = new wchar_t[3];
+        auto *t = new wchar_t[3];
         t[0] = '&';
         t[1] = '&';
         t[2] = '\0';
@@ -118,7 +116,7 @@ void parseExpression(const wchar_t *expr) {
     while (true) {
         next = peek(sc);
         cur = pop(sc);
-        temp[pos++]=cur;
+        temp[pos++] = cur;
         std::wcout << cur;
         if (next == L'\0') {
             // handle last symbol
@@ -137,8 +135,8 @@ void parseExpression(const wchar_t *expr) {
     std::wcout << '\n';
     std::wcout << L"Tokens: ";
     for (int i = 0; i < vector->pos; i++) {
-        wchar_t* t = parseExpressionToken(vector->items[i]);
-        delete [] vector->items[i];
+        wchar_t *t = parseExpressionToken(vector->items[i]);
+        delete[] vector->items[i];
         vector->items[i] = t;
     }
     auto validVec = removeInvalidExpToken(vector);

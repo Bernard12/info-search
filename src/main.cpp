@@ -22,11 +22,12 @@ int main() {
             L"(R) !((qr))    &&  (((x)) || g)",
             L"!((k) !iu)",
             L"((n)   || !qb)",
-            L"!(   R    (vee))"
+            L"!(   R    (vee))",
+            L"(  a  b  )"
     };
+//    parseExpression(L"!((k) !iu)");
 
-
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 7; i++) {
         parseExpression(msg[i]);
         std::wcout << "\n------------" << '\n';
     }
