@@ -25,12 +25,18 @@ int main() {
             L"!(   R    (vee))",
             L"(  a  b  )"
     };
-//    parseExpressionToPolish(L"(  a  b  )");
-
-    for (int i = 0; i < 7; i++) {
-        parseExpressionToPolish(msg[i]);
-        std::wcout << "\n------------" << '\n';
-    }
+    auto p = parseExpressionToPolish(L"!((k) !iu)");
+    auto t = buildExpressionTree(p);
+    // k iu ! && !
+    delete p;
+    delete t;
+//    delete p;
+//    delete t;
+//    for (int i = 0; i < 7; i++) {
+//        auto t = parseExpressionToPolish(msg[i]);
+//        std::wcout << "\n------------" << '\n';
+//        delete t;
+//    }
 //    auto w = createWStrVector(10);
 //    delete w;
     return 0;

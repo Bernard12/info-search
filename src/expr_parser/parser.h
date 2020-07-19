@@ -10,7 +10,9 @@
 #include <cstdio>
 #include <iostream>
 #include "../common/vector/wstr/WStrVector.h"
+#include "../common/vector/node/WNodeVector.h"
 
-WStrVector* parseExpressionToPolish(const wchar_t* expr);
+WStrVector *parseExpressionToPolish(const wchar_t *expr);
+Node* buildExpressionTree(WStrVector* polish);
 
 #endif //INFO_SEARCH_PARSER_H

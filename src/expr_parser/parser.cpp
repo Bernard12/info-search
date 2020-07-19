@@ -117,7 +117,7 @@ int getPriority(const wchar_t c) {
     }
 }
 
-WStrVector* parseExpressionToPolish(const wchar_t *expr) {
+WStrVector *parseExpressionToPolish(const wchar_t *expr) {
     auto vector = createWStrVector(1);
     auto sc = createScanner(expr);
 
@@ -173,7 +173,7 @@ WStrVector* parseExpressionToPolish(const wchar_t *expr) {
             while (true) {
                 top = popWStr(operationStack);
                 if (top[0] == '(') {
-                    delete [] top;
+                    delete[] top;
                     break;
                 }
                 pushWStr(polish, top);
@@ -190,21 +190,20 @@ WStrVector* parseExpressionToPolish(const wchar_t *expr) {
                     operationStack->pos > 0 &&
                     getPriority(operationStack->items[operationStack->pos - 1][0]) >= priority
                     ) {
-                wchar_t* top = popWStr(operationStack);
+                wchar_t *top = popWStr(operationStack);
                 pushWStr(polish, top);
-                delete [] top;
+                delete[] top;
             }
             pushWStr(operationStack, validVec->items[i]);
             continue;
         }
         pushWStr(polish, validVec->items[i]);
-//        bool isOpenBracket = validVec->items[i][0] == '(';
     }
 
     while (operationStack->pos > 0) {
-        wchar_t* top = popWStr(operationStack);
+        wchar_t *top = popWStr(operationStack);
         pushWStr(polish, top);
-        delete [] top;
+        delete[] top;
     }
 
     for (int i = 0; i < polish->pos; i++) {
@@ -217,4 +216,37 @@ WStrVector* parseExpressionToPolish(const wchar_t *expr) {
 
     delete operationStack;
     return polish;
+}
+
+Node *buildNode(const wchar_t *str) {
+    Node *node = new Node;
+    int size = wcslen(str);
+    node->value = new wchar_t[size + 1];
+    wcscpy(node->value, str);
+    return node;
+}
+
+Node *buildExpressionTree(WStrVector *polish) {
+    WNodeVector* nodes = createWNodeVector(10);
+    for (int i = 0; i < polish->pos; i++) {
+        auto node = buildNode(polish->items[i]);
+
+        bool isNot = polish->items[i][0] == L'!';
+        bool isAnd = polish->items[i][0] == L'&';
+        bool isOr = polish->items[i][0] == L'|';
+
+        if (isNot) {
+            auto top = popWNode(nodes);
+            node->left = top;
+        } else if (isAnd || isOr) {
+            auto top1 = popWNode(nodes);
+            auto top2 = popWNode(nodes);
+            node->left = top1;
+            node->right = top2;
+        }
+        pushWNode(nodes, node);
+    }
+    auto root = popWNode(nodes);
+    delete nodes;
+    return root;
 }

@@ -8,8 +8,8 @@
 struct Node {
     wchar_t *value;
 
-    Node *left;
-    Node *right;
+    Node *left = nullptr;
+    Node *right = nullptr;
 
     ~Node() {
         delete left;
@@ -19,11 +19,14 @@ struct Node {
 };
 
 struct WNodeVector {
-    Node* items;
+    Node** items;
     int pos;
     int size;
 
     ~WNodeVector() {
+        for (int i = 0; i < pos; i++) {
+            delete items[i];
+        }
         delete[] items;
     }
 };
