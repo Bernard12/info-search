@@ -20,5 +20,6 @@ add_executable(
         src/common/vector/wstr/WStrVector.cpp
         src/expr_parser/parser.cpp
         src/common/vector/node/WNodeVector.cpp
+        src/common/hash-index/hash-index.cpp
 )
 
