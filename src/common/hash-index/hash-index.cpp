@@ -77,8 +77,8 @@ void writeIndex(HashedInvertedIndex *index, std::ofstream &out) {
             out.write((char *) &tokenHead->hash, sizeof(uint64_t));
 
             IntVector *docs = tokenHead->docArray;
-            out.write((char *) &docs->size, sizeof(int));
-            for (int j = 0; j < docs->size; j++) {
+            out.write((char *) &docs->pos, sizeof(int));
+            for (int j = 0; j < docs->pos; j++) {
                 out.write((char *) &docs->items[j], sizeof(int));
             }
 
