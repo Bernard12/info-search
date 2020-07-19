@@ -80,7 +80,8 @@ WStrVector *removeInvalidExpToken(WStrVector *vec) {
     for (int i = 0; i < vec->pos; i++) {
         bool isOp = wcscmp(vec->items[i], L"&&") == 0 || wcscmp(vec->items[i], L"||") == 0;
         bool prevIsGood = i > 0 && (vec->items[i - 1][0] == L')' || iswalpha(vec->items[i - 1][0]));
-        bool nextIsGood = i < vec->pos - 1 && (vec->items[i + 1][0] == L'(' || iswalpha(vec->items[i + 1][0]) || vec->items[i+1][0] == L'!');
+        bool nextIsGood = i < vec->pos - 1 && (vec->items[i + 1][0] == L'(' || iswalpha(vec->items[i + 1][0]) ||
+                                               vec->items[i + 1][0] == L'!');
         if (isOp && (!prevIsGood || !nextIsGood)) {
             continue;
         }
@@ -104,7 +105,19 @@ wchar_t *parseExpressionToken(const wchar_t *str) {
     return trim(str, L' ');
 }
 
-void parseExpression(const wchar_t *expr) {
+int getPriority(const wchar_t c) {
+    if (c == L'!') {
+        return 3;
+    } else if (c == L'&') {
+        return 2;
+    } else if (c == L'|') {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+WStrVector* parseExpressionToPolish(const wchar_t *expr) {
     auto vector = createWStrVector(1);
     auto sc = createScanner(expr);
 
@@ -133,7 +146,7 @@ void parseExpression(const wchar_t *expr) {
     }
 
     std::wcout << '\n';
-    std::wcout << L"Tokens: ";
+//    std::wcout << L"Tokens: ";
     for (int i = 0; i < vector->pos; i++) {
         wchar_t *t = parseExpressionToken(vector->items[i]);
         delete[] vector->items[i];
@@ -141,10 +154,67 @@ void parseExpression(const wchar_t *expr) {
     }
     auto validVec = removeInvalidExpToken(vector);
 
+//    for (int i = 0; i < validVec->pos; i++) {
+//        std::wcout << "\"" << validVec->items[i] << "\" ";
+//    }
+
+    WStrVector *operationStack = createWStrVector(10);
+    WStrVector *polish = createWStrVector(10);
+
     for (int i = 0; i < validVec->pos; i++) {
-        std::wcout << "\"" << validVec->items[i] << "\" ";
+        bool isOpenBracket = validVec->items[i][0] == L'(';
+        if (isOpenBracket) {
+            pushWStr(operationStack, validVec->items[i]);
+            continue;
+        }
+        bool isCloseBracket = validVec->items[i][0] == L')';
+        if (isCloseBracket) {
+            wchar_t *top;
+            while (true) {
+                top = popWStr(operationStack);
+                if (top[0] == '(') {
+                    delete [] top;
+                    break;
+                }
+                pushWStr(polish, top);
+                delete[] top;
+            }
+            continue;
+        }
+        bool isOperator =
+                validVec->items[i][0] == L'&' || validVec->items[i][0] == L'|' || validVec->items[i][0] == L'!';
+        if (isOperator) {
+            int priority = getPriority(validVec->items[i][0]);
+
+            while (
+                    operationStack->pos > 0 &&
+                    getPriority(operationStack->items[operationStack->pos - 1][0]) >= priority
+                    ) {
+                wchar_t* top = popWStr(operationStack);
+                pushWStr(polish, top);
+                delete [] top;
+            }
+            pushWStr(operationStack, validVec->items[i]);
+            continue;
+        }
+        pushWStr(polish, validVec->items[i]);
+//        bool isOpenBracket = validVec->items[i][0] == '(';
     }
+
+    while (operationStack->pos > 0) {
+        wchar_t* top = popWStr(operationStack);
+        pushWStr(polish, top);
+        delete [] top;
+    }
+
+    for (int i = 0; i < polish->pos; i++) {
+        std::wcout << polish->items[i] << L' ';
+    }
+
     delete sc;
     delete validVec;
     delete vector;
+
+    delete operationStack;
+    return polish;
 }

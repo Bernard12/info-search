@@ -11,6 +11,6 @@
 #include <iostream>
 #include "../common/vector/wstr/WStrVector.h"
 
-void parseExpression(const wchar_t* expr);
+WStrVector* parseExpressionToPolish(const wchar_t* expr);
 
 #endif //INFO_SEARCH_PARSER_H
