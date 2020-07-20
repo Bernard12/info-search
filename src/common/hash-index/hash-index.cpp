@@ -64,6 +64,53 @@ void addToken(HashedInvertedIndex *hashedIndex, const wchar_t *str, int pos, int
         delete[] token;
     }
 }
+void addHash(HashedInvertedIndex *hashedIndex, uint64_t hash, int docId) {
+//    std::wcout << token << L' ';
+    uint64_t h = hash % hashedIndex->size;
+    InvertedIndex *index = &(hashedIndex->indexes[h]);
+
+    if (index->tokenRoot == nullptr) {
+        auto *root = new TokenListNode;
+        root->token = nullptr;
+        root->hash = hash;
+        root->docArray = createIntVector(5);
+        push(root->docArray, docId);
+        root->next = nullptr;
+
+        index->tokenRoot = root;
+        return;
+    }
+
+    TokenListNode *root = index->tokenRoot;
+    TokenListNode *prev = nullptr;
+    // need faster algo to search token
+    while (root != nullptr) {
+        uint64_t rootTokenHash = root->hash;
+        if (hash == rootTokenHash) {
+            break;
+        }
+        prev = root;
+        root = root->next;
+    }
+    // token not found
+    if (root == nullptr) {
+        auto *nextTokenNode = new TokenListNode;
+        nextTokenNode->token = nullptr;
+        nextTokenNode->hash = hash;
+        nextTokenNode->docArray = createIntVector(5);
+        push(nextTokenNode->docArray, docId);
+        nextTokenNode->next = nullptr;
+
+        prev->next = nextTokenNode;
+    } else {
+        IntVector *docIds = root->docArray;
+        bool isDocPresent = has(docIds, docId);
+
+        if (!isDocPresent) {
+            push(docIds, docId);
+        }
+    }
+}
 
 void writeIndex(HashedInvertedIndex *index, std::ofstream &out) {
     int size = index->size;
@@ -85,4 +132,29 @@ void writeIndex(HashedInvertedIndex *index, std::ofstream &out) {
             tokenHead = tokenHead->next;
         }
     }
+}
+
+HashedInvertedIndex* loadIndex(std::istream& in) {
+    uint64_t hash;
+    int maxId = -10;
+
+    auto *result = new HashedInvertedIndex;
+    result->size = 25000;
+    result->indexes = new InvertedIndex[result->size];
+
+    while ( in.read((char *) &hash, sizeof(uint64_t)) ) {
+        int docCount = 0;
+        in.read((char*) &docCount, sizeof(int));
+        std::wcout << "Hash: " << hash << "; doc count: " << docCount << '\n';
+        for (int i = 0; i < docCount; i++) {
+            int docId;
+            in.read((char*) &docId, sizeof(int));
+            std::wcout << docId << ' ';
+            maxId = std::max(maxId, docId);
+            addHash(result, hash, docId);
+        }
+        std::wcout << '\n';
+    }
+    std::wcout << "Max id is: " << maxId << '\n';
+    return result;
 }

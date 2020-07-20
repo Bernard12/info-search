@@ -97,7 +97,7 @@ void createForwardIndex(const char *in, const char *out) {
             ) {
         output.write((char*) &docId, sizeof(int));
         int size = wcslen(notModifiedTitle);
-        output.write((char*) &size, sizeof(int) * size);
+        output.write((char*) &size, sizeof(int) * 1);
         output.write((char*) notModifiedTitle, sizeof(wchar_t ) * size);
         docId++;
     }

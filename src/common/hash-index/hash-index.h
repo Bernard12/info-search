@@ -26,7 +26,7 @@ struct TokenListNode {
 };
 
 struct InvertedIndex {
-    TokenListNode *tokenRoot;
+    TokenListNode *tokenRoot = nullptr;
 
     ~InvertedIndex() {
         delete tokenRoot;
@@ -43,5 +43,7 @@ struct HashedInvertedIndex {
 };
 
 void addToken(HashedInvertedIndex *hashedIndex, const wchar_t *str, int pos, int n, int docId);
+void addHash(HashedInvertedIndex *hashedIndex, uint64_t hash, int docId);
 void writeIndex(HashedInvertedIndex *index, std::ofstream &out);
+HashedInvertedIndex* loadIndex(std::istream& in);
 #endif //INFO_SEARCH_HASH_INDEX_H
