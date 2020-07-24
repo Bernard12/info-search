@@ -4,8 +4,8 @@ project(info_search)
 
 #set(CMAKE_C_FLAGS "${CMAKE_CFLAGS} -O0 -march=native")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -O0 -pg")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -O3 -march=native")
-set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -O3 -march=native")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -Wall")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CFLAGS} -Wall -fsanitize=address")
 
 
@@ -21,5 +21,6 @@ add_executable(
         src/expr_parser/parser.cpp
         src/common/vector/node/WNodeVector.cpp
         src/common/hash-index/hash-index.cpp
+        src/common/vector/utils/utils.cpp
 )
 
