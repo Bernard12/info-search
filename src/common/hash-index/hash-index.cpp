@@ -145,16 +145,16 @@ HashedInvertedIndex* loadIndex(std::istream& in) {
     while ( in.read((char *) &hash, sizeof(uint64_t)) ) {
         int docCount = 0;
         in.read((char*) &docCount, sizeof(int));
-        std::wcout << "Hash: " << hash << "; doc count: " << docCount << '\n';
+//        std::wcout << "Hash: " << hash << "; doc count: " << docCount << '\n';
         for (int i = 0; i < docCount; i++) {
             int docId;
             in.read((char*) &docId, sizeof(int));
-            std::wcout << docId << ' ';
+//            std::wcout << docId << ' ';
             maxId = std::max(maxId, docId);
             addHash(result, hash, docId);
         }
-        std::wcout << '\n';
+//        std::wcout << '\n';
     }
-    std::wcout << "Max id is: " << maxId << '\n';
+//    std::wcout << "Max id is: " << maxId << '\n';
     return result;
 }
