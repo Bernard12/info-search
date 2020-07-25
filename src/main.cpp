@@ -5,18 +5,17 @@
 #include "./boolean/query.h"
 #include "./common/forward-index/forward-index.h"
 
-
-void test() {
-    const wchar_t* t = L"1990";
-}
-
 int main() {
     setupLocal();
-    const char inPath[] = "/home/ivan/CLionProjects/info-search/tparsed.txt";
-    const char outPath[] = "/home/ivan/CLionProjects/info-search/tparsed-tok.txt";
-    const char intest[] = "/home/ivan/CLionProjects/info-search/tparsed-tok.txt";
-    const char invertedIndex[] = "/home/ivan/CLionProjects/info-search/tparsed-inv.bin";
-    const char forwardIndex[] = "/home/ivan/CLionProjects/info-search/tparsed-for.bin";
+//    const char inPath[] = "/home/ivan/CLionProjects/info-search/tparsed.txt";
+//    const char outPath[] = "/home/ivan/CLionProjects/info-search/tparsed-tok.txt";
+//    const char intest[] = "/home/ivan/CLionProjects/info-search/tparsed-tok.txt";
+//    const char invertedIndex[] = "/home/ivan/CLionProjects/info-search/tparsed-inv.bin";
+//    const char forwardIndex[] = "/home/ivan/CLionProjects/info-search/tparsed-for.bin";
+//    const char inPath[] = "/home/ivan/CLionProjects/info-search/parsed.txt";
+//    const char outPath[] = "/home/ivan/CLionProjects/info-search/parsed-tok.txt";
+//    const char invertedIndex[] = "/home/ivan/CLionProjects/info-search/parsed-inv.bin";
+//    const char forwardIndex[] = "/home/ivan/CLionProjects/info-search/parsed-for.bin";
 //    tokenize(inPath, outPath);
 //    createInvertedIndex(intest, invertedIndex);
 //    createForwardIndex(intest, forwardIndex);
@@ -34,21 +33,25 @@ int main() {
 //            L"(  a  b  )"
 //    };
 //    k iu ! && !
-    auto p = parseExpressionToPolish(L"list && 1900");
-    auto t = buildExpressionTree(p);
-
-    std::ifstream in(invertedIndex, std::ios::binary | std::ios::in);
-    auto index = loadIndex(in);
-    in.close();
-
-    std::wcout << '\n';
-    queryClarification(index, t, 3);
-    for (int i = 0; i < t->docs->pos; i++) {
-        std::wcout << t->docs->items[i] << L' ';
-    }
-    delete p;
-    delete t;
-    delete index;
+//    auto p = parseExpressionToPolish(L"list && 1900");
+//    auto t = buildExpressionTree(p);
+////
+//    std::ifstream in(invertedIndex, std::ios::binary | std::ios::in);
+//    auto index = loadIndex(in);
+//    in.close();
+////
+//    std::wcout << '\n';
+//    queryClarification(index, t, 3);
+////
+//    auto res = readForwardIndex(forwardIndex);
+////
+//    for (int i = 0; i < t->docs->pos; i++) {
+//        std::wcout << res->items[t->docs->items[i]] << L'\n';
+//    }
+//    delete p;
+//    delete t;
+//    delete res;
+//    delete index;
 //    for (int i = 0; i < 7; i++) {
 //        auto t = parseExpressionToPolish(msg[i]);
 //        std::wcout << "\n------------" << '\n';
