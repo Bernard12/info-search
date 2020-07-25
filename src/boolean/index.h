@@ -13,6 +13,5 @@
 #include "../common/hash-index/hash-index.h"
 
 void createInvertedIndex(const char* in, const char* out);
-void createForwardIndex(const char* in, const char* out);
 
 #endif //INFO_SEARCH_INDEX_H

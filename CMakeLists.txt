@@ -23,5 +23,6 @@ add_executable(
         src/common/hash-index/hash-index.cpp
         src/common/vector/utils/utils.cpp
         src/boolean/query.cpp
+        src/common/forward-index/forward-index.cpp
 )
 

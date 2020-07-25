@@ -77,33 +77,3 @@ void createInvertedIndex(const char *in, const char *out) {
     delete hashedIndex;
     input.close();
 }
-
-void createForwardIndex(const char *in, const char *out) {
-    std::wifstream input(in);
-    std::ofstream output(out, std::ios::binary | std::ios::out);
-
-    int titleSymbols = 64 * 1024;
-    int textSymbols = 32 * 1024 * 1024;
-    int docId = 0;
-
-    auto *notModifiedTitle = new wchar_t[titleSymbols];
-    auto *title = new wchar_t[titleSymbols];
-    auto *text = new wchar_t[textSymbols];
-
-    while (
-            input.getline(notModifiedTitle, titleSymbols) &&
-            input.getline(title, titleSymbols) &&
-            input.getline(text, textSymbols)
-            ) {
-        output.write((char*) &docId, sizeof(int));
-        int size = wcslen(notModifiedTitle);
-        output.write((char*) &size, sizeof(int) * 1);
-        output.write((char*) notModifiedTitle, sizeof(wchar_t ) * size);
-        docId++;
-    }
-
-    delete[] notModifiedTitle;
-    delete[] title;
-    delete[] text;
-    input.close();
-}
