@@ -5,8 +5,11 @@
 #ifndef INFO_SEARCH_WNODEVECTOR_H
 #define INFO_SEARCH_WNODEVECTOR_H
 
+#include "../int/IntVector.h"
+
 struct Node {
     wchar_t *value;
+    IntVector* docs = nullptr;
 
     Node *left = nullptr;
     Node *right = nullptr;
@@ -14,6 +17,7 @@ struct Node {
     ~Node() {
         delete left;
         delete right;
+        delete docs;
         delete[] value;
     }
 };
