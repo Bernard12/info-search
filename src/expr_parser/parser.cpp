@@ -79,8 +79,9 @@ WStrVector *removeInvalidExpToken(WStrVector *vec) {
     auto res = createWStrVector(10);
     for (int i = 0; i < vec->pos; i++) {
         bool isOp = wcscmp(vec->items[i], L"&&") == 0 || wcscmp(vec->items[i], L"||") == 0;
-        bool prevIsGood = i > 0 && (vec->items[i - 1][0] == L')' || iswalpha(vec->items[i - 1][0]));
-        bool nextIsGood = i < vec->pos - 1 && (vec->items[i + 1][0] == L'(' || iswalpha(vec->items[i + 1][0]) ||
+        bool prevIsGood = i > 0 && (vec->items[i - 1][0] == L')' || iswalpha(vec->items[i - 1][0]) ||
+                                    iswalnum(vec->items[i - 1][0]));
+        bool nextIsGood = i < vec->pos - 1 && (vec->items[i + 1][0] == L'(' || iswalpha(vec->items[i + 1][0]) || iswalnum(vec->items[i + 1][0]) ||
                                                vec->items[i + 1][0] == L'!');
         if (isOp && (!prevIsGood || !nextIsGood)) {
             continue;
@@ -227,7 +228,7 @@ Node *buildNode(const wchar_t *str) {
 }
 
 Node *buildExpressionTree(WStrVector *polish) {
-    WNodeVector* nodes = createWNodeVector(10);
+    WNodeVector *nodes = createWNodeVector(10);
     for (int i = 0; i < polish->pos; i++) {
         auto node = buildNode(polish->items[i]);
 
