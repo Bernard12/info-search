@@ -15,7 +15,6 @@ add_executable(
         src/tokenize/Tokenize.cpp
         src/common/hash/hash.cpp
         src/common/common.h
-        src/boolean/index.cpp
         src/common/vector/int/IntVector.cpp
         src/common/vector/wstr/WStrVector.cpp
         src/expr_parser/parser.cpp
@@ -24,5 +23,6 @@ add_executable(
         src/common/vector/utils/utils.cpp
         src/boolean/query.cpp
         src/common/forward-index/forward-index.cpp
+        src/common/reverse-index/revert-index.cpp
 )
 

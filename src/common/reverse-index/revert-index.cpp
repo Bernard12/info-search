@@ -1,11 +1,8 @@
 //
-// Created by ivan on 10.07.2020.
+// Created by ivan on 25.07.2020.
 //
 
-#include "index.h"
-
-// for doc list
-
+#include "revert-index.h"
 
 int getRealEnd(const wchar_t *str) {
     int size = wcslen(str);

@@ -1,22 +1,26 @@
 #include "./tokenize/Tokenize.h"
 #include "./common/common.h"
-#include "./boolean/index.h"
+#include "./common/reverse-index/revert-index.h"
 #include "./expr_parser/parser.h"
-#include "./common/hash-index/hash-index.h"
-#include "./common/vector/utils/utils.h"
+#include "./boolean/query.h"
+#include "./common/forward-index/forward-index.h"
 
+
+void test() {
+    const wchar_t* t = L"1990";
+}
 
 int main() {
     setupLocal();
-//    const char inPath[] = "/home/ivan/CLionProjects/info-search/parsed.txt";
-//    const char outPath[] = "/home/ivan/CLionProjects/info-search/parsed-tok.txt";
-//    const char intest[] = "/home/ivan/CLionProjects/info-search/test-tok.txt";
-//    const char inversedIndex[] = "/home/ivan/CLionProjects/info-search/test-inv.bin";
-//    const char forwardIndex[] = "/home/ivan/CLionProjects/info-search/test-for.bin";
+    const char inPath[] = "/home/ivan/CLionProjects/info-search/tparsed.txt";
+    const char outPath[] = "/home/ivan/CLionProjects/info-search/tparsed-tok.txt";
+    const char intest[] = "/home/ivan/CLionProjects/info-search/tparsed-tok.txt";
+    const char invertedIndex[] = "/home/ivan/CLionProjects/info-search/tparsed-inv.bin";
+    const char forwardIndex[] = "/home/ivan/CLionProjects/info-search/tparsed-for.bin";
 //    tokenize(inPath, outPath);
-//    createInvertedIndex(intest, inversedIndex);
+//    createInvertedIndex(intest, invertedIndex);
 //    createForwardIndex(intest, forwardIndex);
-//    createInvertedIndex(outPath, inversedIndex);
+//    createInvertedIndex(outPath, invertedIndex);
 //    createForwardIndex(outPath, forwardIndex);
 //    const wchar_t* msg = L"!((N))";
 //    #define SIZE 10
@@ -29,13 +33,22 @@ int main() {
 //            L"!(   R    (vee))",
 //            L"(  a  b  )"
 //    };
-//    auto p = parseExpressionToPolish(L"!((k) !iu)");
-//    auto t = buildExpressionTree(p);
-    // k iu ! && !
-//    delete p;
-//    delete t;
-//    delete p;
-//    delete t;
+//    k iu ! && !
+    auto p = parseExpressionToPolish(L"list && 1900");
+    auto t = buildExpressionTree(p);
+
+    std::ifstream in(invertedIndex, std::ios::binary | std::ios::in);
+    auto index = loadIndex(in);
+    in.close();
+
+    std::wcout << '\n';
+    queryClarification(index, t, 3);
+    for (int i = 0; i < t->docs->pos; i++) {
+        std::wcout << t->docs->items[i] << L' ';
+    }
+    delete p;
+    delete t;
+    delete index;
 //    for (int i = 0; i < 7; i++) {
 //        auto t = parseExpressionToPolish(msg[i]);
 //        std::wcout << "\n------------" << '\n';
@@ -43,15 +56,13 @@ int main() {
 //    }
 //    auto w = createWStrVector(10);
 //    delete w;
-//    std::ifstream in(inversedIndex, std::ios::binary | std::ios::in);
 //    auto index = loadIndex(in);
 //    in.close();
 //    delete index;
 
-    auto v1 = createIntVector(5);
-    push(v1, 0);
-    push(v1, 5);
-    push(v1, 12);
+//    auto v1 = createIntVector(5);
+//    push(v1, 0);
+//    push(v1, 1);
 
 //    auto v2 = createIntVector(5);
 //    push(v2, 0);
@@ -62,14 +73,15 @@ int main() {
 
 //    auto res = intersectVectors(v1, v2);
 //    auto res = unionVectors(v1, v2);
-    auto res = notVector(v1, 15);
+//    auto res = notVector(v1, 3);
 
-    for (int i = 0; i < res->pos; i++) {
-        std::wcout << res->items[i] << ' ';
-    }
+//    for (int i = 0; i < res->pos; i++) {
+//        std::wcout << res->items[i] << ' ';
+//    }
 
-    delete res;
-    delete v1;
+//    delete res;
+//    delete v1;
 //    delete v2;
     return 0;
 }
+
