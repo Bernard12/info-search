@@ -6,9 +6,11 @@
 #define INFO_SEARCH_FORWARD_INDEX_H
 
 #include <iostream>
-#include <string>
 #include <fstream>
+#include <cstring>
+#include "../vector/wstr/WStrVector.h"
 
 void createForwardIndex(const char* in, const char* out);
+WStrVector* readForwardIndex(const char* in);
 
 #endif //INFO_SEARCH_FORWARD_INDEX_H

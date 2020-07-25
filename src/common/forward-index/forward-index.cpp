@@ -33,3 +33,19 @@ void createForwardIndex(const char *in, const char *out) {
     delete[] text;
     input.close();
 }
+
+WStrVector* readForwardIndex(const char* inPath) {
+    std::ifstream in(inPath);
+    WStrVector* res = createWStrVector(10);
+    int id, size;
+    wchar_t temp[1024 * 16] = {0};
+    while (
+            in.read((char*) &id, sizeof(int)) &&
+            in.read((char*) &size, sizeof(int)) &&
+            in.read((char*) &temp, sizeof(wchar_t ) * size)
+            ) {
+        pushWStr(res, temp);
+        std::memset(temp, 0, 1024 * 16);
+    }
+    return res;
+}
