@@ -41,7 +41,9 @@ IntVector *unionVectors(IntVector *a, IntVector *b) {
 IntVector *notVector(IntVector *a, int maxIndex) {
     IntVector *res = createIntVector(10);
     for (int i = 0, j = 0; i < maxIndex; i++) {
-        if ( i < a->items[j] ) {
+        if (i == a->items[j]) {
+            j = (j == a->pos) ? a->pos - 1 : j + 1;
+        } else if ( i < a->items[j] ) {
             push(res, i);
         } else if ( i > a->items[j] ){
             j = (j == a->pos) ? a->pos - 1 : j + 1;
