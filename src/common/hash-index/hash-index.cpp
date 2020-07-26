@@ -158,3 +158,21 @@ HashedInvertedIndex* loadIndex(std::istream& in) {
 //    std::wcout << "Max id is: " << maxId << '\n';
     return result;
 }
+
+int findMaxDocId(HashedInvertedIndex* index) {
+    int res = 0;
+    for (int i = 0; i < index->size; i++) {
+        if (index->indexes[i].tokenRoot == nullptr) {
+            continue;
+        }
+        TokenListNode* root = index->indexes[i].tokenRoot;
+        while (root != nullptr) {
+            auto docs = root->docArray;
+            for (int j = 0; j < docs->pos; j++) {
+                res = docs->items[j] > res ? docs->items[j] : res;
+            }
+            root = root->next;
+        }
+    }
+    return res;
+}

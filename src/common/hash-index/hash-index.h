@@ -46,4 +46,5 @@ void addToken(HashedInvertedIndex *hashedIndex, const wchar_t *str, int pos, int
 void addHash(HashedInvertedIndex *hashedIndex, uint64_t hash, int docId);
 void writeIndex(HashedInvertedIndex *index, std::ofstream &out);
 HashedInvertedIndex* loadIndex(std::istream& in);
+int findMaxDocId(HashedInvertedIndex* index);
 #endif //INFO_SEARCH_HASH_INDEX_H

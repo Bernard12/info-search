@@ -51,7 +51,8 @@ int main(int argc, char **argv) {
         auto tree = buildExpressionTree(polish);
         std::wcerr << "[DEBUG]" << " Perform search in index " << '\n';
         // TODO: write function to find max docId!
-        queryClarification(rIndex, tree, 3);
+        int maxDocId = findMaxDocId(rIndex);
+        queryClarification(rIndex, tree, maxDocId + 1);
         for (int i = 0; i < tree->docs->pos; i++) {
             std::wcout << fIndex->items[tree->docs->items[i]] << std::endl;
         }
