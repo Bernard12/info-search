@@ -27,8 +27,31 @@ html
         div(class="container" style="")
             div(class="row")
                 a(class="back" type="button" href="/") Back
+            div(class="row")
+                a(class="back" type="button" id="prev") Prev
+                div < Page >
+                a(class="back" type="button" id="next") Next
             div(class="row" style="width: fit-content; margin: auto")
                 div
                     each val in titles
                         div(class="search-box")
                             a(href=val.url class="search-box-item" target="_blank")=val.title
+        script().
+            function next() {
+                const url = new URL(window.location.href);
+                const params = new URLSearchParams(url.searchParams);
+                const page = !!params.get("page") && Number(params.get("page")) || 1
+                params.set("page", page + 1);
+                window.location.href = `${url.origin}${url.pathname}?${params.toString()}`;
+            }
+
+            function prev() {
+                const url = new URL(window.location.href);
+                const params = new URLSearchParams(url.searchParams);
+                const page = !!params.get("page") && Number(params.get("page")) || 1
+                params.set("page", Math.max(page - 1, 1));
+                window.location.href = `${url.origin}${url.pathname}?${params.toString()}`;
+            }
+
+            document.getElementById("next").addEventListener("click", next);
+            document.getElementById("prev").addEventListener("click", prev);

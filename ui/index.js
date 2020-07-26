@@ -14,8 +14,15 @@ app.get('/', async (req, res) => {
 
 app.get('/search', async (req, res) => {
     const urlQuery = req.query;
-    const t = await backend.sendQuery(urlQuery.query || "");
-    res.render('search', { title: 'Hey', message: 'Hello there!', titles: t })
+    const foundTitle = await backend.sendQuery(urlQuery.query || "");
+    const page = !!urlQuery.page && Number(urlQuery.page) || 1;
+    const start = 50 * (page - 1);
+    const end = 1 + 50 * page;
+    res.render('search', {
+        title: 'Hey',
+        message: 'Hello there!',
+        titles: foundTitle.filter((x, idx) => idx >= start && idx < end)
+    })
 });
 
 app.listen(port, () => console.log(`Express started`));
