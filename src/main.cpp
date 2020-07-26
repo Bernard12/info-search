@@ -61,7 +61,6 @@ int main(int argc, char **argv) {
             for (int i = 0; i < tree->docs->pos; i++) {
                 std::wcout << fIndex->items[tree->docs->items[i]] << std::endl;
             }
-            break;
         }
 
         delete rIndex;
