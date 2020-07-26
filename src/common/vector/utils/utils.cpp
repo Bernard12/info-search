@@ -35,7 +35,8 @@ IntVector *unionVectors(IntVector *a, IntVector *b) {
         return res;
     }
 
-    for (int i = 0, j = 0; i < a->pos && j < b->pos;) {
+    int i, j;
+    for (i = 0, j = 0; i < a->pos && j < b->pos;) {
         if (a->items[i] == b->items[j]) {
             push(res, a->items[i]);
             i++;
@@ -48,6 +49,14 @@ IntVector *unionVectors(IntVector *a, IntVector *b) {
             j++;
         }
     }
+
+    for (;i < a->pos; i++) {
+        push(res, a->items[i]);
+    }
+    for (;j < b->pos; j++) {
+        push(res, b->items[j]);
+    }
+
     return res;
 }
 
