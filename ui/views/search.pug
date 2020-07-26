@@ -1,0 +1,34 @@
+html
+    head
+        title #{title}
+        link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous")
+        style().
+            .row {
+                width: fit-content;
+                margin: auto;
+            }
+
+            .search-box {
+                border: 1px solid black;
+                border-radius: 4px;
+                margin: 8px;
+            }
+
+            .search-box-item {
+                margin: 8px;
+            }
+
+            .back {
+                padding: 2px;
+                margin: 2px;
+            }
+
+    body
+        div(class="container" style="")
+            div(class="row")
+                a(class="back" type="button" href="/") Back
+            div(class="row" style="width: fit-content; margin: auto")
+                div
+                    each val in titles
+                        div(class="search-box")
+                            a(href=val.url class="search-box-item" target="_blank")=val.title

@@ -8,8 +8,13 @@ const backend = require('./backend');
 app.set('view engine', 'pug');
 
 app.get('/', async (req, res) => {
-    const t = await backend.sendQuery("list");
-    res.render('index', { title: 'Hey', message: 'Hello there!', titles: t })
+    res.render('index', {});
+});
+
+app.get('/search', async (req, res) => {
+    const urlQuery = req.query;
+    const t = await backend.sendQuery(urlQuery.query || "");
+    res.render('search', { title: 'Hey', message: 'Hello there!', titles: t })
 });
 
 app.listen(port, () => console.log(`Express started`));
