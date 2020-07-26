@@ -5,8 +5,65 @@
 #include "./boolean/query.h"
 #include "./common/forward-index/forward-index.h"
 
-int main() {
+#include <getopt.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int main(int argc, char **argv) {
     setupLocal();
+    int optIndex = 0;
+
+    bool isFile = false;
+    const char *queryFilePath = nullptr;
+
+    while ((optIndex = getopt(argc, argv, "f:")) != -1) {
+        switch (optIndex) {
+            case 'f':
+                isFile = true;
+                queryFilePath = optarg;
+                break;
+        }
+    }
+
+    if (isFile) {
+        std::wcout << "Current mode is File" << '\n';
+        std::wcout << "Path: " << queryFilePath << '\n';
+    } else {
+        // Mode for nodejs backend
+        const char invertedIndex[] = "/home/ivan/CLionProjects/info-search/tparsed-inv.bin";
+        const char forwardIndex[] = "/home/ivan/CLionProjects/info-search/parsed-for.bin";
+        std::ifstream in(invertedIndex, std::ios::binary | std::ios::in);
+        auto rIndex = loadIndex(in);
+        auto fIndex = readForwardIndex(forwardIndex);
+
+        std::wstring str;
+        while (true) {
+            std::getline(std::wcin, str);
+            if (str == L"<exit!>") {
+                break;
+            }
+            std::wcerr << "[DEBUG]" << " Received query: " << str << '\n';
+            std::wcerr << "[DEBUG]" << " Parsing query" << '\n';
+            auto polish = parseExpressionToPolish(str.data());
+            std::wcerr << "[DEBUG]" << " Building expression tree" << '\n';
+            auto tree = buildExpressionTree(polish);
+            std::wcerr << "[DEBUG]" << " Perform search in index " << '\n';
+            // TODO: write function to find max docId!
+            queryClarification(rIndex, tree, 3);
+            std::wcout << tree->docs->pos << std::endl;
+            std::wstring signal;
+            std::wcin >> signal;
+            for (int i = 0; i < tree->docs->pos; i++) {
+//                std::wcin >> signal;
+                std::wcout << fIndex->items[tree->docs->items[i]] << std::endl;
+            }
+        }
+
+        delete rIndex;
+        delete fIndex;
+    }
+
 //    const char inPath[] = "/home/ivan/CLionProjects/info-search/tparsed.txt";
 //    const char outPath[] = "/home/ivan/CLionProjects/info-search/tparsed-tok.txt";
 //    const char intest[] = "/home/ivan/CLionProjects/info-search/tparsed-tok.txt";
