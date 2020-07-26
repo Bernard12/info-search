@@ -131,7 +131,7 @@ WStrVector *parseExpressionToPolish(const wchar_t *expr) {
         next = peek(sc);
         cur = pop(sc);
         temp[pos++] = cur;
-        std::wcout << cur;
+//        std::wcout << cur;
         if (next == L'\0') {
             // handle last symbol
             temp[pos] = '\0';
@@ -146,7 +146,7 @@ WStrVector *parseExpressionToPolish(const wchar_t *expr) {
         }
     }
 
-    std::wcout << '\n';
+//    std::wcout << '\n';
 //    std::wcout << L"Tokens: ";
     for (int i = 0; i < vector->pos; i++) {
         wchar_t *t = parseExpressionToken(vector->items[i]);
@@ -208,7 +208,7 @@ WStrVector *parseExpressionToPolish(const wchar_t *expr) {
     }
 
     for (int i = 0; i < polish->pos; i++) {
-        std::wcout << polish->items[i] << L' ';
+//        std::wcout << polish->items[i] << L' ';
     }
 
     delete sc;
