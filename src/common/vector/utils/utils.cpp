@@ -22,6 +22,19 @@ IntVector *intersectVectors(IntVector *a, IntVector *b) {
 
 IntVector *unionVectors(IntVector *a, IntVector *b) {
     IntVector *res = createIntVector(10);
+
+    if (a->pos == 0 || b->pos == 0) {
+        for (int i = 0; i < a->pos; i++) {
+            push(res, a->items[i]);
+        }
+
+        for (int i = 0; i < b->pos; i++) {
+            push(res, b->items[i]);
+        }
+
+        return res;
+    }
+
     for (int i = 0, j = 0; i < a->pos && j < b->pos;) {
         if (a->items[i] == b->items[j]) {
             push(res, a->items[i]);
@@ -40,6 +53,7 @@ IntVector *unionVectors(IntVector *a, IntVector *b) {
 
 IntVector *notVector(IntVector *a, int maxIndex) {
     IntVector *res = createIntVector(10);
+
     for (int i = 0, j = 0; i < maxIndex; i++) {
         if (i == a->items[j]) {
             j = (j == a->pos) ? a->pos - 1 : j + 1;
