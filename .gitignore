@@ -3,3 +3,4 @@ cmake-build-debug
 parsed*
 test*
 node_modules
+tparsed*
