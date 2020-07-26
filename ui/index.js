@@ -3,7 +3,8 @@ const app = express();
 const port = 3000;
 const backend = require('./backend');
 
-// backend.sendQuery("Hello world!");
+// backend.sendQuery("list || moon").then(console.log);
+// backend.sendQuery("list || moon").then(console.log);
 
 app.set('view engine', 'pug');
 
