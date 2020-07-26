@@ -2,16 +2,18 @@ const { chunksToLinesAsync, streamWrite  } = require('@rauschma/stringio');
 
 const {spawn} = require('child_process');
 const basePath = '/home/ivan/CLionProjects/info-search/cmake-build-debug';
+const backend = spawn(`${basePath}/info_search`);
+const stdoutIterator = chunksToLinesAsync(backend.stdout);
+
+const cache = new Map();
 
 async function sendQuery(query) {
-    const backend = spawn(`${basePath}/info_search`, ['-q', query], {
-        stdio: 'pipe'
-    });
-    await streamWrite(backend.stdin, `${query}\n`);
+    if (cache.has(query)) {
+        return cache.get(query);
+    }
+    await streamWrite(backend.stdin, `${query.toLowerCase()}\n`);
 
     const titles = [];
-    const stdoutIterator = chunksToLinesAsync(backend.stdout);
-
     const docCountRaw = await stdoutIterator.next();
     const docCount = Number(docCountRaw.value.replace("\n", ""));
 
@@ -25,6 +27,7 @@ async function sendQuery(query) {
         });
     }
 
+    cache.set(query, titles);
     return titles;
 }
 
