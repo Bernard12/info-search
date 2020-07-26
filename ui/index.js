@@ -9,7 +9,7 @@ app.set('view engine', 'pug');
 
 app.get('/', async (req, res) => {
     const t = await backend.sendQuery("list");
-    res.render('index', { title: 'Hey', message: 'Hello there!', titwles: t.titles })
+    res.render('index', { title: 'Hey', message: 'Hello there!', titles: t })
 });
 
 app.listen(port, () => console.log(`Express started`));

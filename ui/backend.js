@@ -9,9 +9,13 @@ async function sendQuery(query) {
     });
     const titles = [];
     for await (let i of chunksToLinesAsync(backend.stdout)) {
-        titles.push(i);
+        const converted = i.replace("\n", "").split(" ").join("_");
+        titles.push({
+            title: i,
+            url: `https://en.wikipedia.org/wiki/${encodeURI(converted)}`
+        });
     }
-    return { titles };
+    return titles;
 }
 
 module.exports = {
