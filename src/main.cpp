@@ -6,6 +6,7 @@
 #include "./common/forward-index/forward-index.h"
 
 #include <getopt.h>
+#include <clocale>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -16,13 +17,16 @@ int main(int argc, char **argv) {
 
     bool isFile = false;
     const char *queryFilePath = nullptr;
+    const char *query = nullptr;
 
-    while ((optIndex = getopt(argc, argv, "f:")) != -1) {
+    while ((optIndex = getopt(argc, argv, "f:q:")) != -1) {
         switch (optIndex) {
             case 'f':
                 isFile = true;
                 queryFilePath = optarg;
                 break;
+            case 'q':
+                query = optarg;
         }
     }
 
@@ -32,32 +36,24 @@ int main(int argc, char **argv) {
     } else {
         // Mode for nodejs backend
         const char invertedIndex[] = "/home/ivan/CLionProjects/info-search/tparsed-inv.bin";
-        const char forwardIndex[] = "/home/ivan/CLionProjects/info-search/parsed-for.bin";
+        const char forwardIndex[] = "/home/ivan/CLionProjects/info-search/tparsed-for.bin";
         std::ifstream in(invertedIndex, std::ios::binary | std::ios::in);
         auto rIndex = loadIndex(in);
         auto fIndex = readForwardIndex(forwardIndex);
 
-        std::wstring str;
-        while (true) {
-            std::getline(std::wcin, str);
-            if (str == L"<exit!>") {
-                break;
-            }
-            std::wcerr << "[DEBUG]" << " Received query: " << str << '\n';
-            std::wcerr << "[DEBUG]" << " Parsing query" << '\n';
-            auto polish = parseExpressionToPolish(str.data());
-            std::wcerr << "[DEBUG]" << " Building expression tree" << '\n';
-            auto tree = buildExpressionTree(polish);
-            std::wcerr << "[DEBUG]" << " Perform search in index " << '\n';
-            // TODO: write function to find max docId!
-            queryClarification(rIndex, tree, 3);
-            std::wcout << tree->docs->pos << std::endl;
-            std::wstring signal;
-            std::wcin >> signal;
-            for (int i = 0; i < tree->docs->pos; i++) {
-//                std::wcin >> signal;
-                std::wcout << fIndex->items[tree->docs->items[i]] << std::endl;
-            }
+        wchar_t str[1024 * 32];
+        mbstowcs(str, query, strlen(query));
+
+        std::wcerr << "[DEBUG]" << " Received query: " << str << '\n';
+        std::wcerr << "[DEBUG]" << " Parsing query" << '\n';
+        auto polish = parseExpressionToPolish(str);
+        std::wcerr << "[DEBUG]" << " Building expression tree" << '\n';
+        auto tree = buildExpressionTree(polish);
+        std::wcerr << "[DEBUG]" << " Perform search in index " << '\n';
+        // TODO: write function to find max docId!
+        queryClarification(rIndex, tree, 3);
+        for (int i = 0; i < tree->docs->pos; i++) {
+            std::wcout << fIndex->items[tree->docs->items[i]] << std::endl;
         }
 
         delete rIndex;
@@ -123,18 +119,13 @@ int main(int argc, char **argv) {
 //    auto v1 = createIntVector(5);
 //    push(v1, 0);
 //    push(v1, 1);
-
+//
 //    auto v2 = createIntVector(5);
-//    push(v2, 0);
-//    push(v2, 1);
-//    push(v2, 5);
-//    push(v2, 8);
-//    push(v2, 12);
-
-//    auto res = intersectVectors(v1, v2);
-//    auto res = unionVectors(v1, v2);
-//    auto res = notVector(v1, 3);
-
+//
+////    auto res = intersectVectors(v1, v2);
+////    auto res = unionVectors(v1, v2);
+//    auto res = notVector(v2, 3);
+//
 //    for (int i = 0; i < res->pos; i++) {
 //        std::wcout << res->items[i] << ' ';
 //    }
