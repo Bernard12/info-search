@@ -8,7 +8,7 @@ IntVector *findDocs(HashedInvertedIndex *index, uint64_t hash) {
     IntVector *res = createIntVector(10);
     auto bucket = index->indexes + hash % index->size;
 
-    if (bucket == nullptr) {
+    if (bucket->tokenRoot == nullptr) {
         return res;
     }
 
